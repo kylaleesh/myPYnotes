@@ -107,7 +107,7 @@ df.duplicated(subset=None, keep='first')
 ### Missing values
 ```py
 # Drop Missing Values
-DataFrame.dropna(*, axis=0, how=_NoDefault.no_default, thresh=_NoDefault.no_default, subset=None, inplace=False, ignore_index=False)[source]
+DataFrame.dropna(*, axis=0, how=_NoDefault.no_default, thresh=_NoDefault.no_default, subset=None, inplace=False, ignore_index=False)
 
 # Fill Missing Values with 0
 data["colname"].fillna(0, inplace=True) #specific col
@@ -135,9 +135,22 @@ z  3  6
 ### check if a value is in list
 Whether elements in Series are contained in values.
 ```py
-Series.isin(values)[source]
+Series.isin(values)
 ```
 Return a boolean Series showing whether each element in the Series matches an element in the passed sequence of values exactly.
+
+### Creating new columns using assign
+```py
+DataFrame.assign(**kwargs)
+df.assign(temp_f=lambda x: x.temp_c * 9 / 5 + 32)
+''' new temp_f col:
+          temp_c  temp_f
+Portland    17.0    62.6
+Berkeley    25.0    77.0
+'''
+```
+
+
 
 ## Transform DataFrames
 ### Union 2 df
@@ -185,7 +198,7 @@ Creating multiple aggregated data
 
 ### Getting difference from the prev row
 ```py
-DataFrame.diff(periods=1, axis=0)[source]
+DataFrame.diff(periods=1, axis=0)
 
 df.datecol.diff() == '1 days' # date columns
 weather.temperature.diff() > 0 # int columns
