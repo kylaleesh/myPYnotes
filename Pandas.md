@@ -1,22 +1,3 @@
-###### Alt+Shift+v
-
-# Important libraries
-```py
-!import pandas as pd
-!import numpy as np
-```
-
-## Visualizations
-```py
-!import matplotlib.pyplot as plt
-!import seaborn as sns
-```
-
-## Modeling
-```py
-!import sklearn
-```
-
 # PANDAS 
 
 ## Settings
@@ -46,11 +27,6 @@ df = pd.read_excel('./data/stock_data.xlsx',"Sheet1")
 | count # of non-null cols | data.count() |
 | count # of null cols |data.isna().sum() |
 
-## Data cleaning
-|Function|Code|
-|---|---|
-| Replacing "Not Available" with NaN | data.replace({"Not Available":np.nan}) |
-
 ## pd Series (s) & DataFrame (df)
 ```py
 #s
@@ -73,8 +49,12 @@ df = pd.DataFrame(data, columns = ["student_id", "age","area"])
 ```py
 #slice df using condition
 df[
-    df['Year'] > 2012
+    (condition1) & (condition2) | ~(condition3)
 ]
+# ~ not
+# & and
+# | or
+
 #create a new col named x
 df['x'] = df['Population'] * 2
 
@@ -114,6 +94,16 @@ Determines which duplicates (if any) to keep.
 * ignore_index: bool, default False
     * If True, the resulting axis will be labeled 0, 1, …, n - 1.
 
+### Finding Duplicates
+```py
+df.duplicated(subset=None, keep='first')
+```
+* subset: column label or sequence of labels, optional. Only consider certain columns for identifying duplicates, by default use all of the columns.
+* keep: {‘first’, ‘last’, False}, default ‘first’. Determines which duplicates (if any) to mark.
+    * first : Mark duplicates as True except for the first occurrence.
+    * last : Mark duplicates as True except for the last occurrence.
+    * False : Mark all duplicates as True.
+
 ### Missing values
 ```py
 # Drop Missing Values
@@ -122,8 +112,8 @@ DataFrame.dropna(*, axis=0, how=_NoDefault.no_default, thresh=_NoDefault.no_defa
 # Fill Missing Values with 0
 data["colname"].fillna(0, inplace=True) #specific col
 data.fillna(0, inplace=True) #all df
-
 ```
+
 ### Renaming Columns
 ```py
 df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
@@ -142,8 +132,14 @@ y  2  5
 z  3  6
 '''
 ```
+### check if a value is in list
+Whether elements in Series are contained in values.
+```py
+Series.isin(values)[source]
+```
+Return a boolean Series showing whether each element in the Series matches an element in the passed sequence of values exactly.
 
-## Transform Data
+## Transform DataFrames
 ### Union 2 df
 ```py
 pd.concat([df1,df2])
@@ -257,6 +253,33 @@ To:
  df[df.col.str.len() > 15]
  ```
 The apply() function is particularly useful for performing element-wise operations on Series or DataFrame columns, especially when you want to transform or manipulate data using a custom function. It's often used to avoid explicit loops, which can be slower and less concise.
+
+## Transform Strings
+### Regex
+https://www.w3schools.com/python/python_regex.asp
+* []	A set of characters	"[a-m]"	
+* \	Signals a special sequence (can also be used to escape special characters)	"\d"	
+* .	Any character (except newline character)	"he..o"	
+* ^	Starts with	"^hello"	
+* \$	Ends with	"planet$"	
+* \*	Zero or more occurrences	"he.*o"	
+* \+	One or more occurrences	"he.+o"	
+* ?	Zero or one occurrences	"he.?o"	
+* {}	Exactly the specified number of occurrences	"he.{2}o"	
+* |	Either or	"falls|stays"	
+* ()	Capture and group	
+```py
+#checking if df data "starts with DIAB1" (^DIAB1) or contains " DIAB1"
+patients[patients.conditions.str.contains(r'(^DIAB1)|( DIAB1)')]
+
+#checking for emails with:
+#The prefix name is a string that may contain letters (upper or lower case), digits, underscore '_', period '.', and/or dash '-'. The prefix name must start with a letter.
+#The domain is '@leetcode.com'.
+users[
+        users.mail.str.match(r'^[A-Za-z][A-Za-z0-9_.-]*@leetcode[.]com$'')
+    ]
+```
+
 
 ## RANDOM NOTES:
 ### Rounding Even 0.5 Issues
