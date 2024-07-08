@@ -114,6 +114,11 @@ data["colname"].fillna(0, inplace=True) #specific col
 data.fillna(0, inplace=True) #all df
 ```
 
+### Removing/Drop columns
+```py
+DataFrame.drop(['list of col'], axis = 1)
+```
+
 ### Renaming Columns
 ```py
 df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
@@ -149,9 +154,6 @@ Portland    17.0    62.6
 Berkeley    25.0    77.0
 '''
 ```
-
-
-
 ## Transform DataFrames
 ### Union 2 df
 ```py
