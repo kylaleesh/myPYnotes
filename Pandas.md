@@ -76,6 +76,32 @@ by row number (index location - iloc):
 by data labels (.loc)
 * data.loc[1:5,'SKU']
 
+```py
+'''
+Create 3 conditions that will match the specified requirements:
+- no children => Leaf
+- no parent => Root
+- rest => Inner
+'''
+
+def tree_node(tree: pd.DataFrame) -> pd.DataFrame:
+    tree["type"] = "Inner"
+    tree.loc[~tree["id"].isin(tree["p_id"]), "type"] = "Leaf"
+    tree.loc[tree["p_id"].isnull(), "type"] = "Root"
+    return tree[["id","type"]]     
+
+# OR Numpy nested where loops
+import numpy as np
+
+def tree_node(tree: pd.DataFrame) -> pd.DataFrame:
+    tree["type"] =  np.where( tree.p_id.isna(),         "Root",     #//1st condition -> result
+                    np.where(~tree.id.isin(tree.p_id),  "Leaf",     #//2nd condition -> result
+                                                        "Inner" ))  #//last one -> default result
+    return tree[["id","type"]] 
+```
+
+
+
 ## Data Cleaning
 ### Drop duplicates
 ```py
@@ -178,7 +204,15 @@ left_df.merge(right_df, how='inner', on=None, left_on=None, right_on=None, left_
 * suffixeslist-like, default is (“_x”, “_y”). A length-2 sequence where each element is optionally a string indicating the suffix to add to overlapping column names in left and right respectively. Pass a value of None instead of a string to indicate that the column name from left or right should be left as-is, with no suffix. At least one of the values must not be None.
 * copybool, default True. If False, avoid copy if possible.
 
-### GROUP BY - SELECT count(*) in sql
+
+### Using GROUP BY
+DataFrame.groupby(by=None, axis=_NoDefault.no_default, level=None, as_index=True, sort=True, group_keys=True, observed=_NoDefault.no_default, dropna=True)[source]
+* by: mapping, function, label, pd.Grouper or list of such. Used to determine the groups for the groupby.
+* axis: {0 or ‘index’, 1 or ‘columns’}, default 0
+* dropna:bool, default True. If True, and if group keys contain NA values, NA values together with row/column will be dropped. If False, NA values will also be treated as the key in groups.
+
+
+#### GROUP BY - SELECT count(*) in sql
 ```py
 # SQL 50 Q.1581
 df[df.transaction_id.isna()].groupby(by = 'customer_id')['visit_id'].count().rename('count_no_trans').reset_index(name = 'renamecol')
@@ -189,15 +223,23 @@ df[df.transaction_id.isna()].groupby(by = 'customer_id')['visit_id'].count().ren
 # .reset_index(): bring back the 'customer_id' column
 ```
 
-### GROUP BY - ranking 
+#### GROUP BY - ranking 
 ```py
-df = employees.groupby(['reports_to']).agg(
-    reports_count = ('employee_id','count'),
-    average_age = ('age', lambda x: (x.mean() + 1e-6).round() ),
-).reset_index()
+df = employees.groupby(['reports_to']).salary.rank(method = 'average', ascending = True).reset_index()
 ```
+* method: {‘average’, ‘min’, ‘max’, ‘first’, ‘dense’}, default ‘average’ How to rank the group of records that have the same value (i.e. ties):
+    * average: average rank of the group
+    * min: lowest rank in the group
+    * max: highest rank in the group
+    * first: ranks assigned in order they appear in the array
+    * dense: like ‘min’, but rank always increases by 1 between groups.
+* ascending: bool, default True. 
+* na_option{‘keep’, ‘top’, ‘bottom’}, default ‘keep’.How to rank NaN values:
+    * keep: assign NaN rank to NaN values
+    * top: assign lowest rank to NaN values
+    * bottom: assign highest rank to NaN values
 
-### GROUP BY - aggregating 
+#### GROUP BY - aggregating 
 ```py
 df = employees.groupby(['reports_to']).agg(
     reports_count = ('employee_id','count'),
@@ -313,6 +355,24 @@ users[
     ]
 ```
 
+## Transform Dates
+https://docs.python.org/3/library/datetime.html#strftime-and-strptime-behavior
+```py
+data['yr'] = data.date_col.dt.year.astype(int)
+
+df['Date'] = df['Date'].dt.strftime('%d-%m-%Y')
+```
+|Directive|Meaning|Example|
+|----|----|------|
+|%a|Weekday as locale’s abbreviated name.|Sun, Mon, …, Sat (en_US)| 
+|%A|Weekday as locale’s full name.|Sunday, Monday, …, Saturday (en_US)|
+|%w|Weekday as a decimal number, where 0 is Sunday and 6 is Saturday.| 0, 1, …, 6|
+|%d|Day of the month as a zero-padded decimal number.|01, 02, …, 31|
+|%b|Month as locale’s abbreviated name.|Jan, Feb, …, Dec (en_US)|
+|%B|Month as locale’s full name.| January, February, …, December (en_US)|
+|%m|Month as a zero-padded decimal number.|01, 02, …, 12|
+|%y|Year without century as a zero-padded decimal number.|00, 01, …, 99|
+|%Y|Year with century as a decimal number.|0001, 0002, …, 2013, 2014, …, 9998, 9999|
 
 ## RANDOM NOTES:
 ### Rounding Even 0.5 Issues
