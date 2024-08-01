@@ -1,4 +1,4 @@
-# ML models:
+# ML models - Supervised:
 ## Logistic Regression
 * Purpose: Predicting the probability of a binary outcome.
 * Output: Probability values between 0 and 1.

@@ -122,14 +122,14 @@ DataFrame.drop(['list of col'], axis = 1)
 ### Renaming Columns
 ```py
 df = pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
-df.rename(columns={"A": "a", "B": "c"})
+df.rename(columns={"A": "a", "B": "c"}, inplace = True)
 '''
    a  c
 0  1  4
 1  2  5
 2  3  6
 '''
-df.rename(index={0: "x", 1: "y", 2: "z"})
+df.rename(index={0: "x", 1: "y", 2: "z"}, inplace = True)
 '''
    A  B
 x  1  4
@@ -189,6 +189,14 @@ df[df.transaction_id.isna()].groupby(by = 'customer_id')['visit_id'].count().ren
 # .reset_index(): bring back the 'customer_id' column
 ```
 
+### GROUP BY - ranking 
+```py
+df = employees.groupby(['reports_to']).agg(
+    reports_count = ('employee_id','count'),
+    average_age = ('age', lambda x: (x.mean() + 1e-6).round() ),
+).reset_index()
+```
+
 ### GROUP BY - aggregating 
 ```py
 df = employees.groupby(['reports_to']).agg(
@@ -197,6 +205,16 @@ df = employees.groupby(['reports_to']).agg(
 ).reset_index()
 ```
 Creating multiple aggregated data
+
+### Using a function to transform WHOLE DataFrame
+DataFrame.transform(func, axis=0, *args, **kwargs)[source]
+```py
+    df.transform(lambda x: x + 1) #adding 1 to the all rows and cols of df
+    df.transform(func = ['sqrt', 'exp']) #getting sqrt and exp on all cols of df
+    
+    #creating a col called max salary
+    df['max_salary'] = df.groupby('name_y') ['salary'].transform(max)
+```
 
 ### Getting difference from the prev row
 ```py
