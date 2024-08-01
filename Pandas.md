@@ -100,8 +100,6 @@ def tree_node(tree: pd.DataFrame) -> pd.DataFrame:
     return tree[["id","type"]] 
 ```
 
-
-
 ## Data Cleaning
 ### Drop duplicates
 ```py
@@ -218,12 +216,17 @@ DataFrame.groupby(by=None, axis=_NoDefault.no_default, level=None, as_index=True
 df[df.transaction_id.isna()].groupby(by = 'customer_id')['visit_id'].count().rename('count_no_trans').reset_index(name = 'renamecol')
 
 # df[df.transaction_id.isna()]: Getting the null values
-# .groupby(by = 'customer_id')['visit_id'].count(): counting the num of visits
+# .groupby(by = 'customer_id')['visit_id'].count(): counting the num of visits per cus_id
 # .rename('count_no_trans'): rename the col headers
 # .reset_index(): bring back the 'customer_id' column
 ```
 
 #### GROUP BY - ranking 
+Suppose we have a DataFrame with students’ names and scores. Both Charlie and Ella have the same score of 78. 
+* In the 'average' method, Charlie and Ella both get assigned a rank of 3.5, which is the average of ranks 3 and 4. 
+* In the 'min' method, they both get the minimum rank (3). 
+* In the 'max' method, they both get the maximum rank (4). 
+* In the 'first' method, Charlie, being the first occurrence, gets rank 3, and Ella gets rank 4.
 ```py
 df = employees.groupby(['reports_to']).salary.rank(method = 'average', ascending = True).reset_index()
 ```
